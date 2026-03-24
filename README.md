@@ -10,6 +10,54 @@ The missing piece in the production agent toolkit. Works seamlessly alongside [`
 
 ---
 
+
+## How It Works
+
+```mermaid
+flowchart TD
+    A[🤖 LLM Output] --> B{GuardrailChain}
+
+    B --> C[SchemaGuard]
+    C -->|❌ Invalid JSON / schema mismatch| D[RetryGuard]
+    C -->|✅ Valid schema| E[ContentGuard]
+
+    D -->|Refine prompt + retry| A
+    D -->|Max retries exhausted| F[🚨 SchemaGuardError]
+
+    E -->|❌ PII / toxicity / injection detected| G[🚨 ContentGuardError]
+    E -->|✅ Content safe| H[LengthGuard]
+
+    H -->|❌ Too short or too long| I[🚨 LengthGuardError]
+    H -->|✅ Length OK| J[✅ Safe Output]
+
+    style A fill:#1e3a5f,color:#fff
+    style J fill:#1a4731,color:#fff
+    style F fill:#5f1e1e,color:#fff
+    style G fill:#5f1e1e,color:#fff
+    style I fill:#5f1e1e,color:#fff
+    style B fill:#2d2d2d,color:#fff
+```
+
+```mermaid
+sequenceDiagram
+    participant Agent
+    participant GuardrailChain
+    participant SchemaGuard
+    participant ContentGuard
+    participant LengthGuard
+
+    Agent->>GuardrailChain: raw_output
+    GuardrailChain->>SchemaGuard: validate(raw_output)
+    SchemaGuard-->>GuardrailChain: ✅ parsed_obj
+    GuardrailChain->>ContentGuard: validate(parsed_obj)
+    ContentGuard-->>GuardrailChain: ✅ clean
+    GuardrailChain->>LengthGuard: validate(clean)
+    LengthGuard-->>GuardrailChain: ✅ length OK
+    GuardrailChain-->>Agent: safe_output
+```
+
+---
+
 ## Why agent-guardrails?
 
 LLMs are unreliable. They hallucinate JSON, leak PII, generate toxic content, and ignore format instructions.
