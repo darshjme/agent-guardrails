@@ -9,7 +9,7 @@
 
 ### Sacred Boundary — Lakshman Rekha
 
-**Safety guardrails for LLM agents. Content policies, output constraints, safety filters.**
+**Production guardrails for LLM agent outputs — schema validation, content safety, retry logic**
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square&logo=python)](https://python.org)
 [![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-brightgreen?style=flat-square)](https://github.com/darshjme/seema)
